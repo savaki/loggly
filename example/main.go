@@ -1,11 +1,15 @@
-loggly
-======
+package main
 
-api client for loggly.  Provides an io.Writer interface for loggly that uploads via the bulk api
+import (
+	"os"
+	"time"
 
-``` golang
+	"github.com/savaki/loggly"
+)
+
+func main() {
 	token := os.Getenv("LOGGLY_TOKEN")
 	client := loggly.New(token, loggly.Interval(5*time.Second))
 	client.Write([]byte("{\"hello\":\"world\"}\n"))
-```
-
+	client.Flush()
+}
