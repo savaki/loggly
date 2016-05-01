@@ -30,7 +30,7 @@ type Client struct {
 	threshold   int
 	publishFunc func([]byte) error
 	ch          chan *block
-	flush       chan chan struct{}
+	flush       chan chan error
 }
 
 func New(token string, options ...Option) *Client {
@@ -42,7 +42,7 @@ func New(token string, options ...Option) *Client {
 		ctx:        ctx,
 		bufferSize: 4 * 1024,
 		ch:         make(chan *block, 256),
-		flush:      make(chan chan struct{}, 16),
+		flush:      make(chan chan error, 16),
 		interval:   time.Second * 3,
 		threshold:  1024 * 1024,
 		publishFunc: func(data []byte) error {
@@ -64,11 +64,11 @@ func (c *Client) Close() {
 	c.cancel()
 }
 
-func (c *Client) Flush() {
-	ch := make(chan struct{})
+func (c *Client) Flush() error {
+	ch := make(chan error)
 	defer close(ch)
 	c.flush <- ch // send the request
-	<-ch          // wait for a reply
+	return <-ch   // wait for a reply
 }
 
 func (c *Client) Write(data []byte) (int, error) {
@@ -108,7 +108,7 @@ func (c *Client) Start() {
 
 		case v := <-c.flush:
 			publish()
-			v <- struct{}{}
+			v <- nil
 
 		case b := <-c.ch:
 			buffer.Append(b.Bytes())
