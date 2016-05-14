@@ -46,7 +46,10 @@ func New(token string, options ...Option) *Client {
 		interval:   time.Second * 3,
 		threshold:  1024 * 1024,
 		publishFunc: func(data []byte) error {
-			_, err := http.Post(endpoint, "text/plain", bytes.NewReader(data))
+			resp, err := http.Post(endpoint, "text/plain", bytes.NewReader(data))
+			if resp != nil {
+				defer resp.Body.Close()
+			}
 			return err
 		},
 	}
