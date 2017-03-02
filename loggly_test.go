@@ -1,8 +1,8 @@
 package loggly_test
 
 import (
-	"testing"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/savaki/loggly"

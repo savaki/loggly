@@ -2,12 +2,11 @@ package loggly
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
-
-	"golang.org/x/net/context"
 )
 
 const (
